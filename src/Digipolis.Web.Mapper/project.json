@@ -1,0 +1,25 @@
+{
+	"version": "1.0.0-*",
+	"description": "Mapping functionality using AutoMapper for the Digipolis Web toolbox",
+	"authors": [ "digipolis.be" ],
+	"packOptions": {
+        "tags": [ "Toolbox", "Web.Mapper", "AutoMapper", "Mapper", "Mapping filters" ],
+        "repository": {
+            "type": "git",
+            "url": ""
+        },
+        "projectUrl": "",
+        "licenseUrl": ""
+    },
+  "dependencies": {
+    "AutoMapper":  "5.1.1",
+    "Digipolis.Web": "3.0.0",
+    "NETStandard.Library": "1.6.0"
+  },
+	"frameworks": {
+        "netstandard1.6": {
+            "imports": "dnxcore50"
+        }
+    }
+}
+
