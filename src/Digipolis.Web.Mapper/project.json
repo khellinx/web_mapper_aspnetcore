@@ -1,5 +1,5 @@
 {
-	"version": "1.0.0-*",
+	"version": "0.1.0-*",
 	"description": "Mapping functionality using AutoMapper for the Digipolis Web toolbox",
 	"authors": [ "digipolis.be" ],
 	"packOptions": {

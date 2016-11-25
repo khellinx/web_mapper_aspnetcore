@@ -11,6 +11,13 @@ Mapping functionality using AutoMapper for the Digipolis Web toolbox
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+## DISCLAIMER
+
+This is still a beta package and is currently being developed.
+Use at your own risk.
+
+Testing and documentation is absent/minimal but will be expanded in the future.
+
 ## Installation
 
 To add the toolbox to a project, you add the package to the project.json :
