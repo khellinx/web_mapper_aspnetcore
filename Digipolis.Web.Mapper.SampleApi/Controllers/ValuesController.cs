@@ -26,16 +26,16 @@ namespace Digipolis.Web.Mapper.SampleApi.Controllers
 
         // GET api/values
         [HttpGet]
+        [ProducesResponseType(typeof(DataPage<Value>), 200)]
         public IActionResult GetAll(PageOptions pageOptions)
         {
             var result = Logic.GetAll(pageOptions.Page, pageOptions.PageSize);
             return Ok(result);
-            //var pagedResult = pageOptions.ToPagedResult(result.Data, result.TotalEntitycount, nameof(GetAll), "Values");
-            //return Ok(pagedResult);
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Value), 200)]
         public IActionResult Get(int id)
         {
             return Ok(Logic.Get(id));
@@ -43,17 +43,16 @@ namespace Digipolis.Web.Mapper.SampleApi.Controllers
 
         // POST api/values
         [HttpPost]
-        [MapResult(typeof(ValueDetail))]
+        [ProducesResponseType(typeof(Value), 201)]
         public IActionResult Post([MapFromBody(typeof(ValueEdit))]Value value)
         {
-            var isValid = ModelState.ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Valid;
             var result = Logic.Add(value);
             return CreatedAtAction(nameof(Get), result);
         }
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        [MapResult(typeof(ValueDetail))]
+        [ProducesResponseType(typeof(Value), 200)]
         public IActionResult Put(int id, [MapFromBody(typeof(ValueEdit))]Value value)
         {
             var result = Logic.Update(value);
@@ -62,6 +61,7 @@ namespace Digipolis.Web.Mapper.SampleApi.Controllers
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(void), 204)]
         public IActionResult Delete(int id)
         {
             Logic.Delete(id);

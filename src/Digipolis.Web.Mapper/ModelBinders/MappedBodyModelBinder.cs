@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Digipolis.Web.Mapper.Extensions;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Internal;
@@ -80,18 +81,9 @@ namespace Digipolis.Web.Mapper.ModelBinders
             var httpContext = bindingContext.HttpContext;
 
             // Get the mapping source type and its metadata info
-            var controllerParameters = bindingContext.ActionContext.ActionDescriptor.Parameters.OfType<ControllerParameterDescriptor>();
-            ControllerParameterDescriptor mapFromBodyParameter = null;
-            MapFromBodyAttribute mapFromBodyAttribute = null;
-            foreach (var param in controllerParameters)
-            {
-                mapFromBodyAttribute = param.ParameterInfo.GetCustomAttribute<MapFromBodyAttribute>();
-                if (mapFromBodyAttribute != null)
-                {
-                    mapFromBodyParameter = param;
-                    break;
-                }
-            }
+            ControllerParameterDescriptor mapFromBodyParameter;
+            MapFromBodyAttribute mapFromBodyAttribute;
+            bindingContext.ActionContext.ActionDescriptor.GetMapFromBodyParameter(out mapFromBodyParameter, out mapFromBodyAttribute);
 
             // Set the formatter context for the mapped parameter if found
 

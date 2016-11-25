@@ -1,7 +1,9 @@
 ﻿using Digipolis.Web.Mapper.Extensions;
 using Digipolis.Web.Mapper.Filters;
+using Digipolis.Web.Mapper.ModelBinders;
 using Digipolis.Web.Mapper.Options;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -10,9 +12,9 @@ using System.Threading.Tasks;
 
 namespace Digipolis.Web.Mapper.DescriptionProviders
 {
-    public class MapBodyApiDescriptionProvider : IApiDescriptionProvider
+    public class MapFromBodyApiDescriptionProvider : IApiDescriptionProvider
     {
-        public MapBodyApiDescriptionProvider(IOptions<DescriptionProviderOptions<MapBodyApiDescriptionProvider>> options)
+        public MapFromBodyApiDescriptionProvider(IOptions<DescriptionProviderOptions<MapFromBodyApiDescriptionProvider>> options)
         {
             Order = options?.Value?.Order ?? 0;
         }
@@ -21,17 +23,18 @@ namespace Digipolis.Web.Mapper.DescriptionProviders
 
         public void OnProvidersExecuting(ApiDescriptionProviderContext context)
         {
-            // Update the api description
             foreach (var apiDescription in context.Results)
             {
-                var mapBodyAttribute = apiDescription.ActionDescriptor.GetCustomControllerActionAttribute<MapBodyAttribute>();
+                ControllerParameterDescriptor mapFromBodyParameter;
+                MapFromBodyAttribute mapFromBodyAttribute;
+                apiDescription.ActionDescriptor.GetMapFromBodyParameter(out mapFromBodyParameter, out mapFromBodyAttribute);
 
-                if (mapBodyAttribute != null)
+                if (mapFromBodyParameter != null && mapFromBodyAttribute != null)
                 {
-                    var bodyParam = apiDescription.ParameterDescriptions.FirstOrDefault(x => x.Source.Id.Equals("Body"));
-                    if (bodyParam != null)
+                    var resultParameter = apiDescription.ParameterDescriptions.FirstOrDefault(x => x.Source.Id.Equals("Body") && x.Name == mapFromBodyParameter.Name);
+                    if (resultParameter != null)
                     {
-                        bodyParam.Type = mapBodyAttribute.SourceType;
+                        resultParameter.Type = mapFromBodyAttribute.SourceType;
                     }
                 }
             }

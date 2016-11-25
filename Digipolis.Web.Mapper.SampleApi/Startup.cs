@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Digipolis.Web.Api;
+using Digipolis.Web.Mapper.Configuration;
 using Digipolis.Web.Mapper.ModelBinders;
 using Digipolis.Web.Mapper.Options;
 using Digipolis.Web.Mapper.SampleApi.Entities;
 using Digipolis.Web.Mapper.SampleApi.Logic;
+using Digipolis.Web.Mapper.SampleApi.Mapper;
 using Digipolis.Web.Mapper.SampleApi.Models;
 using Digipolis.Web.Startup;
 using Microsoft.AspNetCore.Builder;
@@ -39,34 +41,11 @@ namespace Digipolis.Web.Mapper.SampleApi
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddMvc(options =>
-            {
-                // Get required dependencies for the MappedBodyModelBinderProvider
-                var serviceProvider = services.BuildServiceProvider();
-                var mapper = serviceProvider.GetRequiredService<IMapper>();
-                var readerFactory = serviceProvider.GetRequiredService<IHttpRequestStreamReaderFactory>();
-
-                // Get the index of the current BodyModelBinderProvider (which we'll replace).
-                var current = options.ModelBinderProviders.OfType<BodyModelBinderProvider>().FirstOrDefault();
-                var currentIndex = 0;
-                if (current != null)
-                {
-                    currentIndex = options.ModelBinderProviders.IndexOf(current);
-                    options.ModelBinderProviders.RemoveAt(currentIndex);
-                }
-                options.ModelBinderProviders.Insert(currentIndex, new MappedBodyModelBinderProvider(mapper, options.InputFormatters, readerFactory));
-            }).AddApiExtensions(build: x =>
+            services.AddMvc().AddApiExtensions(build: x =>
             {
                 x.PageSize = 2;
                 x.DisableGlobalErrorHandling = true;
                 x.DisableVersioning = true;
-            });
-
-            // Configure Mapping filter options
-            services.Configure<MapResultOptions>(options =>
-            {
-                options.AddResultMapping<Value, ValueDetail>();
-                options.AddGenericResultMapping(typeof(DataPage<>), typeof(PagedResult<>));
             });
 
             // Add Swagger extensions
@@ -92,8 +71,17 @@ namespace Digipolis.Web.Mapper.SampleApi
             // Add logic
             services.AddScoped<IValueLogic, ValueLogic>();
 
-            // Add AutoMapper
-            services.AddAutoMapper();
+            // Add Mapper
+            services.AddMapper(autoMapperOptions =>
+            {
+                autoMapperOptions.AddProfile<EntitiesToModelsProfile>();
+            }, actionResultOptions =>
+            {
+                actionResultOptions.AddMapping<Value, ValueDetail>();
+                actionResultOptions.AddGenericMapping(typeof(DataPage<>), typeof(PagedResult<>));
+
+                actionResultOptions.TryAddMappingsFromAutoMapperProfile<EntitiesToModelsProfile>();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

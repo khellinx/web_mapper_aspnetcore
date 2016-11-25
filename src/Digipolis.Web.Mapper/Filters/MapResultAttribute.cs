@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Digipolis.Web.Mapper.Extensions;
+using Digipolis.Web.Mapper.Helpers;
 using Digipolis.Web.Mapper.Options;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -8,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Digipolis.Web.Mapper.Filters
@@ -15,101 +18,135 @@ namespace Digipolis.Web.Mapper.Filters
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
     public class MapResultAttribute : Attribute, IFilterFactory
     {
-        private readonly Type _sourceType;
-        private readonly Type _destinationType;
+        private MapResultFilter _filterInstance;
 
+        /// <summary>
+        /// Map the result.
+        /// The Source type will be set to the original type of the result.
+        /// The Destination type will be set to whatever is defined in the MapResult mapping configuration.
+        /// </summary>
         public MapResultAttribute()
         {
-            _sourceType = null;
-            _destinationType = null;
+            SourceType = null;
+            DestinationType = null;
         }
 
+        /// <summary>
+        /// Map the result.
+        /// The Source type will be set to the original type of the result.
+        /// </summary>
+        /// <param name="to">The type to map the result to.</param>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="to"/> is a generic type but not constructed. E.g: typeof(List<>).</exception>
         public MapResultAttribute(Type to)
         {
-            _sourceType = null;
-            _destinationType = to;
+            ValidateType(to, nameof(to));
+
+            SourceType = null;
+            DestinationType = to;
         }
 
+        /// <summary>
+        /// Map the result.
+        /// </summary>
+        /// <param name="from">The type to map the result from.</param>
+        /// <param name="to">The type to map the result to.</param>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="from"/> or <paramref name="to"/> is a generic type but not constructed. E.g: typeof(List<>).</exception>
         public MapResultAttribute(Type from, Type to)
         {
-            _sourceType = from;
-            _destinationType = to;
+            ValidateType(from, nameof(from));
+            ValidateType(to, nameof(to));
+
+            SourceType = from;
+            DestinationType = to;
         }
 
-        public bool IsReusable
-        {
-            get { return false; }
-        }
+        /// <summary>
+        /// The type to map the result from.
+        /// </summary>
+        public Type SourceType { get; private set; }
+        /// <summary>
+        /// The type to map the result to.
+        /// </summary>
+        public Type DestinationType { get; private set; }
+        /// <summary>
+        /// Determines if the mapping is executed, even when Source and Destination types are equal.
+        /// </summary>
+        public bool MapIfTypesMatch { get; set; }
+
+        public bool IsReusable => false;
 
         public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
         {
-            return new MapResultFilter(serviceProvider.GetService<IOptions<MapResultOptions>>(), serviceProvider.GetService<IMapper>(), _destinationType, _sourceType);
+            _filterInstance = new MapResultFilter(serviceProvider.GetService<IMapResultHelper>(), serviceProvider.GetService<IMapper>(), SourceType, DestinationType, MapIfTypesMatch);
+            return _filterInstance;
+        }
+
+        private void ValidateType(Type type, string argumentName)
+        {
+            if (type == null)
+            {
+                // Null values are valid but the underlying tests would fail, so we'll just return here.
+                return;
+            }
+
+            if (type == typeof(void))
+            {
+                throw new ArgumentException("Void is not a valid MapResult type.");
+            }
+
+            var typeInfo = type.GetTypeInfo();
+
+            if (typeInfo.IsGenericType && !type.IsConstructedGenericType)
+            {
+                throw new ArgumentException("If the type is a generic type, the generic type arguments should be specified. Try to add a generic mapping to the MapResult configuration instead.", argumentName);
+            }
         }
 
         private class MapResultFilter : IResultFilter
         {
-            public MapResultFilter(IOptions<MapResultOptions> options, IMapper mapper, Type destinationType, Type sourceType = null)
+            public MapResultFilter(IMapResultHelper helper, IMapper mapper, Type sourceType, Type destinationType, bool mapIfTypesMatch)
             {
-                Options = options;
+                Helper = helper;
                 Mapper = mapper;
                 SourceType = sourceType;
                 DestinationType = destinationType;
+                MapIfTypesMatch = mapIfTypesMatch;
             }
 
-            public IOptions<MapResultOptions> Options { get; private set; }
+            public IMapResultHelper Helper { get; private set; }
             public IMapper Mapper { get; private set; }
             public Type SourceType { get; private set; }
             public Type DestinationType { get; private set; }
+            public bool MapIfTypesMatch { get; private set; }
 
             public void OnResultExecuting(ResultExecutingContext context)
             {
+                // Make sure only one MapResultFilter is applied.
+                // The one with the highest scope and lowest order should be used (which is what the GetFilter extension method returns).
+                var filter = context.ActionDescriptor.GetFilter<MapResultAttribute>();
+                if (filter._filterInstance != this) return;
+
+                // Get the original result
                 var result = context.Result as ObjectResult;
+
+                // Only map results that have an ok status
                 if (result == null || !result.StatusCode.HasValue || (result.StatusCode != (int)HttpStatusCode.Created && result.StatusCode != (int)HttpStatusCode.OK)) return;
 
+                // Infer the source and destination types if they are not specified.
                 if (SourceType == null)
                 {
                     SourceType = result.Value.GetType();
                 }
-
                 if (DestinationType == null)
                 {
-                    DestinationType = MapType(SourceType, false);
+                    DestinationType = Helper.MapType(SourceType, false);
                 }
 
-                result.Value = Mapper.Map(result.Value, SourceType, DestinationType);
-            }
-
-            private Type MapType(Type source, bool useSourceIfMappingNotFound)
-            {
-                Type destination = null;
-
-                if (Options?.Value == null) throw new Exception($"No mapping configuration defined for MapResult filter.");
-
-                if (Options.Value.IsMappingDefined(source))
+                // Map the result
+                if (SourceType != DestinationType || MapIfTypesMatch)
                 {
-                    destination = Options.Value.GetMapping(source);
+                    result.Value = Mapper.Map(result.Value, SourceType, DestinationType);
                 }
-                else if (source.IsConstructedGenericType && Options.Value.IsGenericMappingDefined(source.GetGenericTypeDefinition()))
-                {
-                    var temp = Options.Value.GetGenericMapping(source.GetGenericTypeDefinition());
-                    var genericTypeArguments = new List<Type>();
-
-                    foreach (var type in source.GenericTypeArguments)
-                    {
-                        genericTypeArguments.Add(MapType(type, true));
-                    }
-
-                    destination = temp.MakeGenericType(genericTypeArguments.ToArray());
-                }
-                else
-                {
-                    if (useSourceIfMappingNotFound)
-                        destination = source;
-                    else
-                        throw new Exception($"No mapping found for type '{source.FullName}'.");
-                }
-
-                return destination;
             }
 
             public void OnResultExecuted(ResultExecutedContext context)
