@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace Digipolis.Web.Mapper.Filters
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-    public class MapResultAttribute : Attribute, IFilterFactory
+    public class MapResultAttribute : ResultFilterAttribute, IFilterFactory
     {
         private MapResultFilter _filterInstance;
 

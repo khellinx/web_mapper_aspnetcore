@@ -18,7 +18,12 @@ namespace Digipolis.Web.Mapper.SampleApi.Mapper.Custom
 
             var items = context.Mapper.Map<IEnumerable<TEntity>, IEnumerable<TModel>>(source.Data);
 
-            return new PagedResult<TModel>(source.PageNumber, source.PageLength, (int)source.TotalEntityCount, items);
+            var pageOptions = new PageOptions()
+            {
+                Page = source.PageNumber,
+                PageSize = source.PageLength
+            };
+            return new PagedResult<TModel>(pageOptions, (int)source.TotalEntityCount, items);
         }
     }
 }
