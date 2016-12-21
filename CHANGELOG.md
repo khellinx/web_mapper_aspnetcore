@@ -14,3 +14,7 @@
 
 - Updated XML comments and added them to the nuget package.
 - Updated configuration extension method name.
+
+### 0.1.3
+
+- Added some extra null checks

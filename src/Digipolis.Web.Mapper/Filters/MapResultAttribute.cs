@@ -134,8 +134,8 @@ namespace Digipolis.Web.Mapper.Filters
                 // Get the original result
                 var result = context.Result as ObjectResult;
 
-                // Only map results that have an ok status
-                if (result == null || !result.StatusCode.HasValue || (result.StatusCode != (int)HttpStatusCode.Created && result.StatusCode != (int)HttpStatusCode.OK)) return;
+                // Only map results that have an ok status and a result
+                if (result?.Value == null || !result.StatusCode.HasValue || (result.StatusCode != (int)HttpStatusCode.Created && result.StatusCode != (int)HttpStatusCode.OK)) return;
 
                 // Infer the source and destination types if they are not specified.
                 if (SourceType == null)

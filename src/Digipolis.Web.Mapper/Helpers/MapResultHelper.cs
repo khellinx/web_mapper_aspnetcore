@@ -31,6 +31,8 @@ namespace Digipolis.Web.Mapper.Helpers
         /// <returns>A type to map the result to based on the specified source type.</returns>
         public Type MapType(Type source, bool useSourceIfMappingNotFound)
         {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+
             Type destination = null;
 
             if (_options?.Value == null) throw new InvalidOperationException("No mapping configuration defined for MapResult filter.");
