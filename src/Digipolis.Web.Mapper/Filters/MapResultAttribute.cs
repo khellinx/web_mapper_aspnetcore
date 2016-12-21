@@ -15,6 +15,9 @@ using System.Threading.Tasks;
 
 namespace Digipolis.Web.Mapper.Filters
 {
+    /// <summary>
+    /// Filter for mapping an MVC action result. This filter can be applied to methods and classes.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
     public class MapResultAttribute : ResultFilterAttribute, IFilterFactory
     {
@@ -36,7 +39,7 @@ namespace Digipolis.Web.Mapper.Filters
         /// The Source type will be set to the original type of the result.
         /// </summary>
         /// <param name="to">The type to map the result to.</param>
-        /// <exception cref="ArgumentException">Thrown when <paramref name="to"/> is a generic type but not constructed. E.g: typeof(List<>).</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="to"/> is a generic type but not constructed. E.g: typeof(List&lt;&gt;).</exception>
         public MapResultAttribute(Type to)
         {
             ValidateType(to, nameof(to));
@@ -50,7 +53,7 @@ namespace Digipolis.Web.Mapper.Filters
         /// </summary>
         /// <param name="from">The type to map the result from.</param>
         /// <param name="to">The type to map the result to.</param>
-        /// <exception cref="ArgumentException">Thrown when <paramref name="from"/> or <paramref name="to"/> is a generic type but not constructed. E.g: typeof(List<>).</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="from"/> or <paramref name="to"/> is a generic type but not constructed. E.g: typeof(List&lt;&gt;).</exception>
         public MapResultAttribute(Type from, Type to)
         {
             ValidateType(from, nameof(from));
@@ -73,8 +76,10 @@ namespace Digipolis.Web.Mapper.Filters
         /// </summary>
         public bool MapIfTypesMatch { get; set; }
 
+        /// <inheritdoc />
         public bool IsReusable => false;
 
+        /// <inheritdoc />
         public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
         {
             _filterInstance = new MapResultFilter(serviceProvider.GetService<IMapResultHelper>(), serviceProvider.GetService<IMapper>(), SourceType, DestinationType, MapIfTypesMatch);

@@ -1,5 +1,4 @@
 ﻿using Digipolis.Web.Api;
-using Digipolis.Web.Api.Models;
 using Digipolis.Web.Mapper.Filters;
 using Digipolis.Web.Mapper.ModelBinders;
 using Digipolis.Web.Mapper.SampleApi.Entities;

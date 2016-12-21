@@ -16,6 +16,9 @@ using System.Threading.Tasks;
 
 namespace Digipolis.Web.Mapper.Configuration
 {
+    /// <summary>
+    /// Static class containing extension method for adding mapper to IServiceCollection
+    /// </summary>
     public static class MapperConfiguration
     {
         /// <summary>
@@ -26,7 +29,7 @@ namespace Digipolis.Web.Mapper.Configuration
         /// <param name="configureActionResultMapper">Optional configuration options where result and body mappings can be defined.</param>
         /// <param name="apiDescriptionProviderOrder">Optional order of the Api Description Provider for the MapFromBody functionality. Keep this value as low as possible.</param>
         /// <returns>The service collection with added mapper functionality.</returns>
-        public static IServiceCollection AddMapper(this IServiceCollection services, Action<IMapperConfigurationExpression> configureAutoMapper = null, Action<MapResultOptions> configureActionResultMapper = null, int apiDescriptionProviderOrder = 0)
+        public static IServiceCollection AddWebMapper(this IServiceCollection services, Action<IMapperConfigurationExpression> configureAutoMapper = null, Action<MapResultOptions> configureActionResultMapper = null, int apiDescriptionProviderOrder = 0)
         {
             // Add the Body Modelbinder with mapping functionality
             services.Configure<MvcOptions>(options =>

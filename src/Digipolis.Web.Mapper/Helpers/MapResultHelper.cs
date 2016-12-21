@@ -7,17 +7,24 @@ using System.Threading.Tasks;
 
 namespace Digipolis.Web.Mapper.Helpers
 {
+    /// <summary>
+    /// A web mapper helper implementation
+    /// </summary>
     public class MapResultHelper : IMapResultHelper
     {
         private readonly IOptions<MapResultOptions> _options;
 
+        /// <summary>
+        /// Constructor for MapResultHelper for which options can be provided.
+        /// </summary>
+        /// <param name="options">The options for configurating the web mapper.</param>
         public MapResultHelper(IOptions<MapResultOptions> options)
         {
             _options = options;
         }
 
         /// <summary>
-        /// Use the ActionResult mapping configuration to determine which type to map to.
+        /// Determine which type to map to using the ActionResult mapping configuration.
         /// </summary>
         /// <param name="source">The source type to find a result mapping for.</param>
         /// <param name="useSourceIfMappingNotFound">If no mapping is found for the specified type, you can specify if the source type should be returned, otherwise an exception will be thrown.</param>

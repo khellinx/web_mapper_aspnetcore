@@ -12,11 +12,18 @@ namespace Digipolis.Web.Mapper.ModelBinders
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
     public class MapFromBodyAttribute : Attribute, IBindingSourceMetadata
     {
+        /// <summary>
+        /// Constructor with the required source type to map from.
+        /// </summary>
+        /// <param name="from"></param>
         public MapFromBodyAttribute(Type from)
         {
             SourceType = from;
         }
 
+        /// <summary>
+        /// The source type.
+        /// </summary>
         public Type SourceType { get; private set; }
 
         /// <inheritdoc />

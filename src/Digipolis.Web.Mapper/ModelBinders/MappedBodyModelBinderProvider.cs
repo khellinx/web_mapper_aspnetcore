@@ -23,6 +23,7 @@ namespace Digipolis.Web.Mapper.ModelBinders
         /// <summary>
         /// Creates a new <see cref="BodyModelBinderProvider"/>.
         /// </summary>
+        /// <param name="mapper">An Automapper instance.</param>
         /// <param name="formatters">The list of <see cref="IInputFormatter"/>.</param>
         /// <param name="readerFactory">The <see cref="IHttpRequestStreamReaderFactory"/>.</param>
         public MappedBodyModelBinderProvider(IMapper mapper, IList<IInputFormatter> formatters, IHttpRequestStreamReaderFactory readerFactory)

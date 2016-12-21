@@ -1,5 +1,5 @@
 {
-	"version": "0.1.1-*",
+	"version": "0.1.2-*",
 	"description": "Mapping functionality using AutoMapper for the Digipolis Web toolbox",
 	"authors": [ "digipolis.be" ],
 	"packOptions": {
@@ -14,14 +14,17 @@
   "dependencies": {
     "AutoMapper": "5.1.1",
     "AutoMapper.Extensions.Microsoft.DependencyInjection": "1.1.2",
-    "Digipolis.Web": "3.1.2-sl",
+    "Digipolis.Web": "3.1.3-sl",
     "Microsoft.Extensions.DependencyInjection": "1.0.0",
     "NETStandard.Library": "1.6.0"
   },
-	"frameworks": {
-        "netstandard1.6": {
-            "imports": "dnxcore50"
-        }
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50"
     }
+  },
+  "buildOptions": {
+    "xmlDoc": true
+  }
 }
 

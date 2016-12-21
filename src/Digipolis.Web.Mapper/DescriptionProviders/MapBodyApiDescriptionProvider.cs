@@ -12,15 +12,30 @@ using System.Threading.Tasks;
 
 namespace Digipolis.Web.Mapper.DescriptionProviders
 {
+    /// <summary>
+    /// An API description provider for the MapFromBody filter.
+    /// This will set the body parameter type in all api descriptions to a mapped type when the MapFromBody is used.
+    /// </summary>
     public class MapFromBodyApiDescriptionProvider : IApiDescriptionProvider
     {
+        /// <summary>
+        /// A constructor accepting default decription provider options.
+        /// </summary>
+        /// <param name="options">Options for this API description provider.</param>
         public MapFromBodyApiDescriptionProvider(IOptions<DescriptionProviderOptions<MapFromBodyApiDescriptionProvider>> options)
         {
             Order = options?.Value?.Order ?? 0;
         }
 
+        /// <summary>
+        /// The order used when adding this API description providers to the collection of MVC API description providers.
+        /// </summary>
         public int Order { get; private set; }
 
+        /// <summary>
+        /// Sets the body parameter type in the api description to a mapped type specified in the MapFromBody filter.
+        /// </summary>
+        /// <param name="context">The context</param>
         public void OnProvidersExecuting(ApiDescriptionProviderContext context)
         {
             foreach (var apiDescription in context.Results)
@@ -40,6 +55,10 @@ namespace Digipolis.Web.Mapper.DescriptionProviders
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
         public void OnProvidersExecuted(ApiDescriptionProviderContext context)
         {
         }

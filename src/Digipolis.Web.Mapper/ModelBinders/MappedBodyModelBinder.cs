@@ -14,6 +14,9 @@ using System.Threading.Tasks;
 
 namespace Digipolis.Web.Mapper.ModelBinders
 {
+    /// <summary>
+    /// Modelbinder for the mapped result.
+    /// </summary>
     public class MappedBodyModelBinder : IModelBinder
     {
         private readonly IModelMetadataProvider _modelMetadataProvider;
@@ -22,8 +25,10 @@ namespace Digipolis.Web.Mapper.ModelBinders
         private readonly Func<Stream, Encoding, TextReader> _readerFactory;
 
         /// <summary>
-        /// Creates a new <see cref="BodyModelBinder"/>.
+        /// Creates a new <see cref="MappedBodyModelBinder"/>.
         /// </summary>
+        /// <param name="modelMetadataProvider">The model metadata provider.</param>
+        /// <param name="mapper">The Automapper instance.</param>
         /// <param name="formatters">The list of <see cref="IInputFormatter"/>.</param>
         /// <param name="readerFactory">
         /// The <see cref="IHttpRequestStreamReaderFactory"/>, used to create <see cref="System.IO.TextReader"/>

@@ -72,7 +72,7 @@ namespace Digipolis.Web.Mapper.SampleApi
             services.AddScoped<IValueLogic, ValueLogic>();
 
             // Add Mapper
-            services.AddMapper(autoMapperOptions =>
+            services.AddWebMapper(autoMapperOptions =>
             {
                 autoMapperOptions.AddProfile<EntitiesToModelsProfile>();
             }, actionResultOptions =>

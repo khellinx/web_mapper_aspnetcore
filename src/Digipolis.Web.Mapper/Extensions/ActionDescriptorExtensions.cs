@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace Digipolis.Web.Mapper.Extensions
 {
+    /// <summary>
+    /// A static class containing extension methods for ActionDescriptors
+    /// </summary>
     public static class ActionDescriptorExtensions
     {
         /// <summary>
