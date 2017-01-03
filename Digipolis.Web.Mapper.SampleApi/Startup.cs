@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Digipolis.Errors;
 using Digipolis.Web.Api;
+using Digipolis.Web.Api.ApiExplorer;
 using Digipolis.Web.Mapper.Configuration;
 using Digipolis.Web.Mapper.ModelBinders;
 using Digipolis.Web.Mapper.Options;
@@ -19,6 +21,7 @@ using Swashbuckle.Swagger.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Digipolis.Web.Mapper.SampleApi
@@ -47,6 +50,39 @@ namespace Digipolis.Web.Mapper.SampleApi
                 x.DisableGlobalErrorHandling = true;
                 x.DisableVersioning = true;
             });
+
+            // Add default response types
+            services.AddDefaultResponsesApiDescriptionProvider();
+            services.Configure<DefaultResponsesOptions>(options =>
+            {
+                // IMPORTANT: this order should be lower than the Web.Mapper api description provider order.
+                options.Order = 0;
+
+                // All responses produce json
+                options.AddDefaultResponseFormat("application/json");
+
+                // 401 - Unauthorized
+                options.AddDefaultResponseType((int)HttpStatusCode.Unauthorized, typeof(Error));
+
+                // 403 - Forbidden
+                options.AddDefaultResponseType((int)HttpStatusCode.Forbidden, typeof(Error));
+
+                // 404 - Not Found
+                options.AddDefaultResponseType((int)HttpStatusCode.NotFound, typeof(Error)).ToGet().WhenHasRouteParameter(paramNameContains: "id");
+                options.AddDefaultResponseType((int)HttpStatusCode.NotFound, typeof(Error)).ToPut().WhenHasRouteParameter(paramNameContains: "id");
+
+                // 422 - Validation failed
+                options.AddDefaultResponseType(422, typeof(Error)).ToPost();
+                options.AddDefaultResponseType(422, typeof(Error)).ToPut();
+
+                // 500 - Internal server Error
+                options.AddDefaultResponseType((int)HttpStatusCode.InternalServerError, typeof(Error));
+            });
+
+            // Add other description providers
+            services.AddApiDescriptionProvider<LowerCaseRelativePathApiDescriptionProvider>(10);
+            services.AddApiDescriptionProvider<LowerCaseQueryParametersApiDescriptionProvider>(11);
+            services.AddApiDescriptionProvider<ConsumesJsonApiDescriptionProvider>(30);
 
             // Add Swagger extensions
             services.AddSwaggerGen<ApiExtensionSwaggerSettings>(x =>
@@ -81,7 +117,7 @@ namespace Digipolis.Web.Mapper.SampleApi
                 actionResultOptions.AddGenericMapping(typeof(DataPage<>), typeof(PagedResult<>));
 
                 actionResultOptions.TryAddMappingsFromAutoMapperProfile<EntitiesToModelsProfile>();
-            });
+            }, 1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
