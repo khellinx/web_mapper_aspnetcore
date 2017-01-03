@@ -59,6 +59,14 @@ namespace Digipolis.Web.Mapper.DescriptionProviders
                         }
 
                         var sourceType = mapResultAttribute.SourceType ?? responseType.Type;
+                        if (sourceType == null)
+                        {
+                            // I guess this shouldn't happen because it's kinda bad practice returning an Ok or Created without return type.
+                            // Nevertheless, this isn't the AvoidBadPractices toolbox :-)
+                            // Without this null check, the Helper.MapType function beneath would return an ArgumentNullException, which is also not something we would want.
+                            break;
+                        }
+
                         var destinationType = mapResultAttribute.DestinationType ?? Helper.MapType(sourceType, true);
 
                         responseType.Type = destinationType;

@@ -17,4 +17,8 @@
 
 ### 0.1.3
 
-- Added some extra null checks
+- Added some extra null checks.
+
+### 0.1.4
+
+- Added null check for OK (200) responses without response type.
