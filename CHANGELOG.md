@@ -22,3 +22,7 @@
 ### 0.1.4
 
 - Added null check for OK (200) responses without response type.
+
+### 0.1.5
+
+- Update Web toolbox to version 3.1.5-sl.
