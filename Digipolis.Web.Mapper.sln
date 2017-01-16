@@ -23,7 +23,7 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Digipolis.Web.Mapper.UnitTe
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{2F8F0772-E98D-4766-83F2-6647E774F2CE}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Digipolis.Web.Mapper.SampleApi", "Digipolis.Web.Mapper.SampleApi\Digipolis.Web.Mapper.SampleApi.xproj", "{0116D18E-2302-4DA0-BC94-094772B957E3}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Digipolis.Web.Mapper.SampleApi", "samples\Digipolis.Web.Mapper.SampleApi\Digipolis.Web.Mapper.SampleApi.xproj", "{0116D18E-2302-4DA0-BC94-094772B957E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
